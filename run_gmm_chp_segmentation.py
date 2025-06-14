@@ -13,12 +13,18 @@ from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 
 
 def run_cmd(cmd):
-    """Run a shell command and print its output and errors."""
-    print(cmd)
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    """
+    Run a shell command with specific environment modules loaded.
+    Adjusted for use on systems with environment modules.
+    """
+    module_setup = "module load freesurfer/7.4.1; module load fsl/6.0.7.4;"
+    full_cmd = f"bash -c '{module_setup} {cmd}'"
+    print(full_cmd)
+    result = subprocess.run(full_cmd, shell=True, capture_output=True, text=True, executable='/bin/bash')
     print(result.stdout)
     show_error(result.stderr)
     return result.stdout, result.stderr
+
 
 
 def show_error(err):

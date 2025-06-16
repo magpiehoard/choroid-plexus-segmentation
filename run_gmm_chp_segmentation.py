@@ -132,7 +132,7 @@ def main():
     mask_t1_vals = T1[lh_mask_indices]
     X = mask_t1_vals.reshape(-1, 1)
 
-    bgmm_lh = BayesianGaussianMixture(n_components=2, covariance_type='full').fit(X)
+    bgmm_lh = BayesianGaussianMixture(n_components=2, covariance_type='full', max_iter=1000).fit(X)
     save_segmentation(bgmm_lh, 'lh_choroid_gmmb_mask.nii.gz', mask_t1_vals, X,
                       lh_mask_indices, lh_mask_obj, subjects_dir, subj)
 
@@ -148,7 +148,7 @@ def main():
     ).get_fdata()
     susan_vals = lh_choroid_gmmb_susan[lh_choroid_gmmb_mask_indices]
 
-    bgmm_susan_lh = BayesianGaussianMixture(n_components=3).fit(susan_vals.reshape(-1, 1))
+    bgmm_susan_lh = BayesianGaussianMixture(n_components=3, max_iter=1000).fit(susan_vals.reshape(-1, 1))
     susan_predictions = bgmm_susan_lh.predict(susan_vals.reshape(-1, 1))
     means = bgmm_susan_lh.means_.flatten()
     choroid_cluster = int(np.argmax(means))
@@ -174,8 +174,8 @@ def main():
     X_rh = mask_t1_vals_rh.reshape(-1, 1)
 
     # Fit both GMM and BayesianGMM (only Bayesian is used for segmentation)
-    _ = GaussianMixture(n_components=2, covariance_type='full').fit(X_rh)
-    bgmm_rh = BayesianGaussianMixture(n_components=2, covariance_type='full').fit(X_rh)
+    _ = GaussianMixture(n_components=2, covariance_type='full', max_iter=1000).fit(X_rh)
+    bgmm_rh = BayesianGaussianMixture(n_components=2, covariance_type='full',max_iter=1000).fit(X_rh)
     save_segmentation(bgmm_rh, 'rh_choroid_gmmb_mask.nii.gz', mask_t1_vals_rh, X_rh,
                       rh_mask_indices, rh_mask_obj, subjects_dir, subj)
 
@@ -190,7 +190,7 @@ def main():
     rh_choroid_gmmb_mask_indices = np.where(rh_choroid_gmmb_mask == 1)
     susan_vals_rh = rh_choroid_gmmb_susan[rh_choroid_gmmb_mask_indices]
 
-    bgmm_susan_rh = BayesianGaussianMixture(n_components=3).fit(susan_vals_rh.reshape(-1, 1))
+    bgmm_susan_rh = BayesianGaussianMixture(n_components=3, max_iter=1000).fit(susan_vals_rh.reshape(-1, 1))
     susan_predictions_rh = bgmm_susan_rh.predict(susan_vals_rh.reshape(-1, 1))
     means_rh = bgmm_susan_rh.means_.flatten()
     choroid_cluster_rh = int(np.argmax(means_rh))
